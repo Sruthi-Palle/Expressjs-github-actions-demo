@@ -1,12 +1,22 @@
-import bodyParser from 'body-parser';
-import express from 'express';
+import bodyParser from "body-parser";
+import express from "express";
 
-import eventRoutes from './routes/events.js';
+import { connectToDatabase } from "./data/database.js";
+import eventRoutes from "./routes/events.js";
 
 const app = express();
 
 app.use(bodyParser.json());
 
+// Register event routes
 app.use(eventRoutes);
 
-app.listen(process.env.PORT);
+/**
+ * Starts the Express server after connecting to the database.
+ */
+async function startServer() {
+  await connectToDatabase(); // Wait for the database connection to be established
+  app.listen(process.env.PORT); // Start listening for requests
+}
+
+startServer();
