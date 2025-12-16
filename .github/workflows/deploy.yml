@@ -19,12 +19,23 @@ jobs:
     steps:
       - name: Get Code
         uses: actions/checkout@v4
+      # This step caches the node_modules directory for faster builds.
       - name: Cache dependencies
+        # An 'id' is assigned to this step so its output can be referenced later.
+        id: cache-node-modules
         uses: actions/cache@v4
         with:
-          path: ~/.npm
-          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
+          # The path to the directory to cache. We cache node_modules directly.
+          path: node_modules
+          # The cache key. A new cache is created only when package-lock.json changes.
+          key: v1-deps-node-modules-${{ hashFiles('**/package-lock.json') }}
+      # This step installs dependencies, but only if the cache was not restored.
       - name: Install dependencies
+        # The 'if' condition checks the output of the 'cache-node-modules' step.
+        # It runs 'npm ci' only on a "cache miss".
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        # if there is no if condition ,Its first step/default behaviour is to completely delete the local node_modules directory.
+        # Then, it installs a fresh set of packages based exactly on your package-lock.json file.
         run: npm ci
       - name: Run server
         run: npm start & npx wait-on http://127.0.0.1:$PORT
