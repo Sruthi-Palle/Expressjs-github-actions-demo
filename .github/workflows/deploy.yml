@@ -19,7 +19,7 @@ jobs:
     steps:
       - name: Get Code
         uses: actions/checkout@v4
-      # This step caches the node_modules directory for faster builds.
+      # This step caches the node_modules directory for faster builds
       - name: Cache dependencies
         # An 'id' is assigned to this step so its output can be referenced later.
         id: cache-node-modules
